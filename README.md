@@ -16,10 +16,18 @@ A 100% vibe coded minimal macOS menu bar app for capturing thoughts quickly.
 
 ## Building
 
-Open `Scratchpad.xcodeproj` in Xcode and press `Cmd+R`, or build from the command line:
+From the project's root directory:
 
 ```sh
+# Debug build
+xcodebuild -project Scratchpad.xcodeproj -scheme Scratchpad -configuration Debug build
+```
+
+```sh
+# Release build
 xcodebuild -scheme Scratchpad -configuration Release build
 ```
+
+xcodebuild -project /Users/mattkeating/Documents/Dev/scratchpad/Scratchpad.xcodeproj -scheme Scratchpad -configuration Debug build
 
 The built app lands in `build/Release/Scratchpad.app`.
