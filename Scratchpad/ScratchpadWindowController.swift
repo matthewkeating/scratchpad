@@ -138,11 +138,23 @@ class ScratchpadWindowController: NSWindowController, NSWindowDelegate {
 
     private func moveToActiveScreenIfNeeded(_ panel: NSPanel) {
         let mouseLocation = NSEvent.mouseLocation
-        guard let target = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) ?? NSScreen.main,
-              panel.screen != target else { return }
-        let size = panel.frame.size
-        let sf   = target.visibleFrame
-        panel.setFrameOrigin(NSPoint(x: sf.midX - size.width / 2, y: sf.midY - size.height / 2))
+        guard let target = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) ?? NSScreen.main else { return }
+
+        let panelCenter = NSPoint(x: panel.frame.midX, y: panel.frame.midY)
+        guard let source = NSScreen.screens.first(where: { $0.frame.contains(panelCenter) }),
+              source != target else { return }
+
+        let sourceVF = source.visibleFrame
+        let targetVF = target.visibleFrame
+        let size     = panel.frame.size
+
+        let relX = (panel.frame.minX - sourceVF.minX) / sourceVF.width
+        let relY = (panel.frame.minY - sourceVF.minY) / sourceVF.height
+
+        let newX = max(targetVF.minX, min(targetVF.minX + relX * targetVF.width, targetVF.maxX - size.width))
+        let newY = max(targetVF.minY, min(targetVF.minY + relY * targetVF.height, targetVF.maxY - size.height))
+
+        panel.setFrameOrigin(NSPoint(x: newX, y: newY))
     }
 
     // MARK: - Frame persistence

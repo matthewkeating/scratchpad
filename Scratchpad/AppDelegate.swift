@@ -8,6 +8,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var hotKeyRef: EventHotKeyRef?
     private var eventHandlerRef: EventHandlerRef?
     private var showHideItem: NSMenuItem!
+    private var aboutPanel: NSPanel?
 
     // MARK: - Lifecycle
 
@@ -112,11 +113,61 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func showAbout() {
         NSApp.activate(ignoringOtherApps: true)
-        var options: [NSApplication.AboutPanelOptionKey: Any] = [:]
-        if let icon = NSImage(systemSymbolName: "note.text", accessibilityDescription: nil) {
-            options[.applicationIcon] = icon
+        if let panel = aboutPanel, panel.isVisible {
+            panel.makeKeyAndOrderFront(nil)
+            return
         }
-        NSApp.orderFrontStandardAboutPanel(options: options)
+        aboutPanel = buildAboutPanel()
+        aboutPanel?.makeKeyAndOrderFront(nil)
+    }
+
+    private func buildAboutPanel() -> NSPanel {
+        let panel = NSPanel(
+            contentRect: NSRect(x: 0, y: 0, width: 280, height: 320),
+            styleMask: [.titled, .closable, .fullSizeContentView],
+            backing: .buffered,
+            defer: false
+        )
+        panel.titlebarAppearsTransparent = true
+        panel.titleVisibility = .hidden
+        panel.isMovableByWindowBackground = true
+        panel.center()
+
+        let content = panel.contentView!
+
+        let iconConfig = NSImage.SymbolConfiguration(pointSize: 192, weight: .regular)
+        let iconImage  = NSImage(systemSymbolName: "note.text", accessibilityDescription: nil)?
+            .withSymbolConfiguration(iconConfig)
+        let iconView = NSImageView(image: iconImage ?? NSImage())
+        iconView.imageScaling = .scaleProportionallyUpOrDown
+        NSLayoutConstraint.activate([
+            iconView.widthAnchor.constraint(equalToConstant: 192),
+            iconView.heightAnchor.constraint(equalToConstant: 192),
+        ])
+
+        let nameLabel = NSTextField(labelWithString: "Scratchpad")
+        nameLabel.font = NSFont.boldSystemFont(ofSize: 17)
+        nameLabel.alignment = .center
+
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+        let versionLabel = NSTextField(labelWithString: "Version \(version)")
+        versionLabel.font = NSFont.systemFont(ofSize: 13)
+        versionLabel.textColor = .secondaryLabelColor
+        versionLabel.alignment = .center
+
+        let stack = NSStackView(views: [iconView, nameLabel, versionLabel])
+        stack.orientation  = .vertical
+        stack.alignment    = .centerX
+        stack.spacing      = 10
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        content.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.centerXAnchor.constraint(equalTo: content.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: content.centerYAnchor),
+        ])
+
+        return panel
     }
 
     @objc private func openGitHub() {
