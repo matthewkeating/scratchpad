@@ -6,7 +6,9 @@ private let kTextKey  = "scratchpadTextContent"
 class ScratchpadWindowController: NSWindowController, NSWindowDelegate {
 
     private(set) var textView: ScratchpadTextView!
-    private var isHiding = false
+    private var isHiding    = false
+    private var guideWindow: SnapGuidelineWindow?
+    private var dragMonitor: Any?
 
     init() {
         let savedFrameStr = UserDefaults.standard.string(forKey: kFrameKey)
@@ -49,9 +51,9 @@ class ScratchpadWindowController: NSWindowController, NSWindowDelegate {
     private func setupTextView() {
         guard let content = window?.contentView else { return }
 
-        let font = NSFont(name: "MesloLGS-Regular", size: 15)
-            ?? NSFont(name: "Menlo-Regular", size: 15)
-            ?? NSFont.monospacedSystemFont(ofSize: 15, weight: .regular)
+        let font = NSFont(name: "MesloLGS-Regular", size: 14)
+            ?? NSFont(name: "Menlo-Regular", size: 14)
+            ?? NSFont.monospacedSystemFont(ofSize: 14, weight: .regular)
 
         let scroll = NSScrollView(frame: content.bounds)
         scroll.autoresizingMask  = [.width, .height]
@@ -127,6 +129,7 @@ class ScratchpadWindowController: NSWindowController, NSWindowDelegate {
     func hideWindow() {
         guard !isHiding else { return }
         isHiding = true
+        hideGuidelines()
         saveFrame()
         window?.orderOut(nil)
         isHiding = false
@@ -164,10 +167,67 @@ class ScratchpadWindowController: NSWindowController, NSWindowDelegate {
         UserDefaults.standard.set(NSStringFromRect(f), forKey: kFrameKey)
     }
 
+    // MARK: - Snap guidelines
+
+    func windowWillMove(_ notification: Notification) {
+        guard guideWindow == nil,
+              let panel = window,
+              let screen = panel.screen ?? NSScreen.main else { return }
+
+        let gw = SnapGuidelineWindow(screen: screen)
+        gw.order(.below, relativeTo: panel.windowNumber)
+        guideWindow = gw
+        updateGuidelines()
+
+        dragMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseUp) { [weak self] _ in
+            self?.snapOnRelease()
+            self?.hideGuidelines()
+        }
+    }
+
+    private func updateGuidelines() {
+        guard let gw = guideWindow,
+              let panel = window,
+              let screen = panel.screen ?? NSScreen.main else { return }
+        gw.update(screen: screen, panelFrame: panel.frame)
+    }
+
+    private func snapOnRelease() {
+        guard let panel = window,
+              let screen = panel.screen ?? NSScreen.main else { return }
+
+        let threshold  = SnapGuidelineWindow.snapThreshold
+        let centerX    = screen.frame.midX
+        let suggestedY = screen.visibleFrame.midY
+
+        let nearX = abs(panel.frame.midX - centerX)    < threshold
+        let nearY = abs(panel.frame.midY - suggestedY) < threshold
+        guard nearX || nearY else { return }
+
+        var origin = panel.frame.origin
+        if nearX { origin.x = centerX    - panel.frame.width  / 2 }
+        if nearY { origin.y = suggestedY - panel.frame.height / 2 }
+        panel.setFrameOrigin(origin)
+        saveFrame()
+    }
+
+    private func hideGuidelines() {
+        guideWindow?.orderOut(nil)
+        guideWindow = nil
+        if let monitor = dragMonitor {
+            NSEvent.removeMonitor(monitor)
+            dragMonitor = nil
+        }
+    }
+
     // MARK: - NSWindowDelegate
 
     func windowDidResize(_ notification: Notification) { saveFrame() }
-    func windowDidMove(_ notification: Notification)   { saveFrame() }
+
+    func windowDidMove(_ notification: Notification) {
+        saveFrame()
+        if guideWindow != nil { updateGuidelines() }
+    }
 
     func windowDidResignKey(_ notification: Notification) {
         hideWindow()

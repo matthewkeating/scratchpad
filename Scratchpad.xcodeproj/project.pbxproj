@@ -11,6 +11,7 @@
 		AA000000000000000000BF02 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000FR02 /* AppDelegate.swift */; };
 		AA000000000000000000BF03 /* ScratchpadWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000FR03 /* ScratchpadWindowController.swift */; };
 		AA000000000000000000BF04 /* ScratchpadTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000FR04 /* ScratchpadTextView.swift */; };
+		AA000000000000000000BF06 /* SnapGuidelineWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000FR08 /* SnapGuidelineWindow.swift */; };
 		AA000000000000000000BF05 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000FR05 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -22,6 +23,7 @@
 		AA000000000000000000FR05 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA000000000000000000FR06 /* Scratchpad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Scratchpad.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA000000000000000000FR07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA000000000000000000FR08 /* SnapGuidelineWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapGuidelineWindow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +52,7 @@
 				AA000000000000000000FR02 /* AppDelegate.swift */,
 				AA000000000000000000FR03 /* ScratchpadWindowController.swift */,
 				AA000000000000000000FR04 /* ScratchpadTextView.swift */,
+				AA000000000000000000FR08 /* SnapGuidelineWindow.swift */,
 				AA000000000000000000FR05 /* Assets.xcassets */,
 				AA000000000000000000FR07 /* Info.plist */,
 			);
@@ -137,6 +140,7 @@
 				AA000000000000000000BF02 /* AppDelegate.swift in Sources */,
 				AA000000000000000000BF03 /* ScratchpadWindowController.swift in Sources */,
 				AA000000000000000000BF04 /* ScratchpadTextView.swift in Sources */,
+				AA000000000000000000BF06 /* SnapGuidelineWindow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
