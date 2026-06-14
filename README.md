@@ -27,5 +27,3 @@ xcodebuild -project Scratchpad.xcodeproj -scheme Scratchpad -configuration Debug
 # Release build
 xcodebuild -scheme Scratchpad -configuration Release build
 ```
-
-The built app lands in `build/Release/Scratchpad.app`.
