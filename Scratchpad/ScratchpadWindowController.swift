@@ -82,7 +82,7 @@ class ScratchpadWindowController: NSWindowController, NSWindowDelegate {
         tv.isAutomaticTextReplacementEnabled     = false
         tv.isContinuousSpellCheckingEnabled      = false
         tv.isGrammarCheckingEnabled              = false
-        tv.textContainerInset                    = NSSize(width: 14, height: 14)
+        tv.textContainerInset                    = NSSize(width: 14, height: 0)
 
         tv.onEscape = { [weak self] in self?.hideWindow() }
 
